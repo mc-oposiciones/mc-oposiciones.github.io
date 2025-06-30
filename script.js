@@ -184,11 +184,10 @@ document.addEventListener("DOMContentLoaded", () => {
 		const form = document.getElementById("contact-form");
 		if (!form) return;
 
-		// Configuración EmailJS - CAMBIA ESTOS VALORES
 		const EMAIL_CONFIG = {
-			publicKey: "HdgKFPwR2IKVpaw5j",
-			serviceId: "service_7zadqe5",
-			templateId: "template_72nmtzs",
+			publicKey: "1vi1fsa21HJtjOfi3",
+			serviceId: "service_t4fkzpg",
+			templateId: "template_t0wwp0e",
 		};
 
 		// Inicializar EmailJS
