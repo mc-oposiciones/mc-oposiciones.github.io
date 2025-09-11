@@ -143,9 +143,19 @@ img {
 }
 
 .logo {
+	display: flex;
+	align-items: center;
+	gap: 8px;
 	font-weight: 700;
 	font-size: 1.4rem;
 	color: var(--color-primary);
+	text-decoration: none;
+}
+
+.logo-icon {
+	width: 65px;
+	height: 65px;
+	display: block;
 }
 
 .nav-links {
@@ -200,13 +210,16 @@ img {
 	display: inline-block;
 	background-color: var(--color-secondary);
 	color: var(--color-white);
-	padding: 14px 32px;
+	height: 50px;
+	line-height: 50px; /* centra verticalmente */
+	padding: 0 10px;
 	border-radius: var(--border-radius);
 	font-weight: 700;
 	letter-spacing: 1px;
 	transition: background-color var(--transition-speed), transform var(--transition-speed), box-shadow var(--transition-speed);
 	border: none;
 	box-shadow: 0 4px 15px rgba(42, 157, 143, 0.2);
+	text-align: center; /* centra horizontal */
 }
 
 .cta-button:hover,
@@ -467,8 +480,8 @@ img {
 
 .course-image {
 	width: 100%;
-	height: 220px;
 	object-fit: cover;
+	height: fit-content;
 }
 
 .course-card-content {
@@ -555,8 +568,8 @@ img {
 /* ============================================= */
 .pricing-grid {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 30px;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 10px;
 	align-items: stretch;
 }
 
