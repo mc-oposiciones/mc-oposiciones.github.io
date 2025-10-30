@@ -190,31 +190,42 @@ document.addEventListener("DOMContentLoaded", () => {
 			templateId: "template_t0wwp0e",
 		};
 
-		// Inicializar EmailJS
 		emailjs.init(EMAIL_CONFIG.publicKey);
 
 		const nameInput = document.getElementById("name");
 		const emailInput = document.getElementById("email");
+		const phoneInput = document.getElementById("phone");
 		const messageInput = document.getElementById("message");
 		const successMessage = document.getElementById("form-success-message");
+		const submitBtn = form.querySelector('button[type="submit"]');
+
+		const getFormGroup = (input) => input?.closest(".form-group") || input?.parentElement || null;
 
 		const showError = (input, message) => {
-			const formGroup = input.parentElement;
-			const errorDisplay = formGroup.querySelector(".error-message");
+			if (!input) return;
+			const formGroup = getFormGroup(input);
+			const errorDisplay = formGroup?.querySelector(".error-message");
 			input.classList.add("invalid");
-			errorDisplay.textContent = message;
+			input.setAttribute("aria-invalid", "true");
+			if (errorDisplay) errorDisplay.textContent = message;
 		};
 
 		const hideError = (input) => {
-			const formGroup = input.parentElement;
-			const errorDisplay = formGroup.querySelector(".error-message");
+			if (!input) return;
+			const formGroup = getFormGroup(input);
+			const errorDisplay = formGroup?.querySelector(".error-message");
 			input.classList.remove("invalid");
-			errorDisplay.textContent = "";
+			input.removeAttribute("aria-invalid");
+			if (errorDisplay) errorDisplay.textContent = "";
 		};
 
-		const validateEmail = (email) => {
-			const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-			return re.test(String(email).toLowerCase());
+		const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase());
+
+		// Teléfono 🇪🇸: permite opcionalmente prefijo +34 y 9 dígitos empezando por 6/7/8/9, con o sin espacios/guiones.
+		const validateSpanishPhone = (value) => {
+			if (!value) return true; // vacío = no validar (campo opcional)
+			const s = value.replace(/\s|-/g, "");
+			return /^(\+34)?[6789]\d{8}$/.test(s);
 		};
 
 		form.addEventListener("submit", (e) => {
@@ -222,18 +233,16 @@ document.addEventListener("DOMContentLoaded", () => {
 			let isValid = true;
 
 			// Limpiar errores anteriores
-			hideError(nameInput);
-			hideError(emailInput);
-			hideError(messageInput);
+			[nameInput, emailInput, phoneInput, messageInput].forEach(hideError);
 			successMessage.textContent = "";
 
 			// Validar campos
-			if (nameInput.value.trim() === "") {
+			if (!nameInput || nameInput.value.trim() === "") {
 				showError(nameInput, "El nombre es obligatorio.");
 				isValid = false;
 			}
 
-			if (emailInput.value.trim() === "") {
+			if (!emailInput || emailInput.value.trim() === "") {
 				showError(emailInput, "El email es obligatorio.");
 				isValid = false;
 			} else if (!validateEmail(emailInput.value)) {
@@ -241,13 +250,25 @@ document.addEventListener("DOMContentLoaded", () => {
 				isValid = false;
 			}
 
-			if (messageInput.value.trim() === "") {
+			// ✳️ Teléfono opcional pero con formato válido si se rellena
+			if (phoneInput && phoneInput.value.trim() !== "" && !validateSpanishPhone(phoneInput.value)) {
+				showError(phoneInput, "Introduce un teléfono válido (p. ej., +34 600 123 456).");
+				isValid = false;
+			}
+
+			if (phoneInput && phoneInput.value.trim() === "") {
+				showError(phoneInput, "El teléfono es obligatorio.");
+				isValid = false;
+			}
+
+			if (!messageInput || messageInput.value.trim() === "") {
 				showError(messageInput, "El mensaje no puede estar vacío.");
 				isValid = false;
 			}
 
 			// Si es válido, enviar con EmailJS
 			if (isValid) {
+				submitBtn?.setAttribute("disabled", "true");
 				console.log("Enviando formulario...");
 
 				emailjs
@@ -259,6 +280,9 @@ document.addEventListener("DOMContentLoaded", () => {
 					.catch((error) => {
 						console.error("Error al enviar:", error);
 						successMessage.textContent = "Error al enviar. Inténtalo de nuevo.";
+					})
+					.finally(() => {
+						submitBtn?.removeAttribute("disabled");
 					});
 			}
 		});
